@@ -54,7 +54,6 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     OrdersModule,
     PaymentsModule,
   ],
-
   controllers: [AppController],
   providers: [
     AppService,

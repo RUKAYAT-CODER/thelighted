@@ -8,6 +8,13 @@ const TWENTY_FOUR_HOURS: u64 = 24 * 60 * 60; // 24 hours in seconds
 const STORAGE_LIFETIME_THRESHOLD: u32 = 518400; // ~60 days
 const STORAGE_BUMP_AMOUNT: u32 = 1036800; // ~120 days
 
+mod storage;
+mod oracle;
+
+use soroban_sdk::{contract, contractimpl, Env, Address};
+use storage::*;
+use oracle::*;
+
 #[contracttype]
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum EscrowStatus {
@@ -165,9 +172,44 @@ impl OrderEscrowContract {
             .extend_ttl(&order_id, STORAGE_LIFETIME_THRESHOLD, STORAGE_BUMP_AMOUNT);
     }
 
-    /// Get escrow details for an order
-    pub fn get_escrow_details(env: Env, order_id: u64) -> Escrow {
-        env.storage().persistent().get(&order_id).expect("Order not found")
+    #[contract]
+pub struct LoyaltyTokenOracle;
+
+#[contractimpl]
+impl LoyaltyTokenOracle {
+    pub fn init(
+        env: Env,
+        admin: Address,
+        default_price: i128,
+        min_price: i128,
+        max_price: i128,
+    ) {
+        admin.require_auth();
+        set_admin(&env, &admin);
+        set_default_price(&env, default_price);
+        set_bounds(&env, min_price, max_price);
+    }
+
+    pub fn update_price_feed(env: Env, oracle: Address) {
+        require_admin(&env);
+        set_oracle(&env, oracle);
+    }
+
+    pub fn set_price_bounds(env: Env, min: i128, max: i128) {
+        require_admin(&env);
+        set_bounds(&env, min, max);
+    }
+
+    pub fn refresh_price(env: Env) {
+        refresh_from_oracle(&env);
+    }
+
+    pub fn get_current_token_value(env: Env) -> i128 {
+        get_current_price(&env)
+    }
+
+    pub fn get_price_history(env: Env) -> Vec<PriceEntry> {
+        get_history(&env)
     }
 }
 

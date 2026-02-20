@@ -1,6 +1,0 @@
-[workspace]
-members = ["payment-escrow"]
-resolver = "2"
-
-[workspace.dependencies]
-soroban-sdk = "20.0.0"

@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = [
+    "restaurant_registry",
+    "order",
+    "payment",
+    "loyalty_token",
+]
+
+[workspace.dependencies]
+soroban-sdk = { version = "22.0.0", features = ["alloc"] }

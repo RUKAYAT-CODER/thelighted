@@ -6,8 +6,9 @@ import { Minus, Plus } from "lucide-react";
 
 interface QuantitySelectorProps {
   quantity: number;
-  onIncrement: () => void;
-  onDecrement: () => void;
+  onIncrease: () => void;
+  onDecrease: () => void;
+  size?: "sm" | "lg";
   min?: number;
   max?: number;
   className?: string;
@@ -15,50 +16,63 @@ interface QuantitySelectorProps {
 
 export function QuantitySelector({
   quantity,
-  onIncrement,
-  onDecrement,
+  onIncrease,
+  onDecrease,
+  size = "sm",
   min = 1,
   max = 99,
   className = "",
 }: QuantitySelectorProps) {
-  const canDecrement = quantity > min;
-  const canIncrement = quantity < max;
+  const canDecrease = quantity > min;
+  const canIncrease = quantity < max;
+
+  const sizeClasses = {
+    sm: {
+      container: "h-8",
+      button: "h-8 w-8",
+      icon: "h-4 w-4",
+      text: "text-sm",
+    },
+    lg: {
+      container: "h-12",
+      button: "h-12 w-12",
+      icon: "h-5 w-5",
+      text: "text-base",
+    },
+  };
+
+  const currentSize = sizeClasses[size];
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`inline-flex items-center rounded-lg border border-gray-300 bg-white ${currentSize.container} ${className}`}>
       <motion.button
         whileTap={{ scale: 0.95 }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={canDecrease ? { scale: 1.05 } : {}}
         type="button"
-        onClick={onDecrement}
-        disabled={!canDecrement}
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        onClick={onDecrease}
+        disabled={!canDecrease}
+        className={`flex items-center justify-center ${currentSize.button} rounded-l-lg border-r border-gray-300 text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white`}
         aria-label="Decrease quantity"
       >
-        <Minus className="h-4 w-4" />
+        <Minus className={currentSize.icon} />
       </motion.button>
 
-      <motion.div
-        key={quantity}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.2 }}
-        className="min-w-[2rem] text-center font-medium text-lg text-gray-900"
+      <div 
+        className={`flex-1 text-center font-medium ${currentSize.text} text-gray-900 select-none`}
       >
         {quantity}
-      </motion.div>
+      </div>
 
       <motion.button
         whileTap={{ scale: 0.95 }}
-        whileHover={{ scale: 1.05 }}
+        whileHover={canIncrease ? { scale: 1.05 } : {}}
         type="button"
-        onClick={onIncrement}
-        disabled={!canIncrement}
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        onClick={onIncrease}
+        disabled={!canIncrease}
+        className={`flex items-center justify-center ${currentSize.button} rounded-r-lg border-l border-gray-300 text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-white`}
         aria-label="Increase quantity"
       >
-        <Plus className="h-4 w-4" />
+        <Plus className={currentSize.icon} />
       </motion.button>
     </div>
   );

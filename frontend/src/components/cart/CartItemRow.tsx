@@ -17,11 +17,11 @@ interface CartItemRowProps {
 export function CartItemRow({ item, className = "" }: CartItemRowProps) {
   const { updateQuantity, removeItem } = useCartStore();
 
-  const handleIncrement = () => {
+  const handleIncrease = () => {
     updateQuantity(item.id, item.quantity + 1);
   };
 
-  const handleDecrement = () => {
+  const handleDecrease = () => {
     updateQuantity(item.id, item.quantity - 1);
   };
 
@@ -63,8 +63,9 @@ export function CartItemRow({ item, className = "" }: CartItemRowProps) {
       <div className="flex-shrink-0">
         <QuantitySelector
           quantity={item.quantity}
-          onIncrement={handleIncrement}
-          onDecrement={handleDecrement}
+          onIncrease={handleIncrease}
+          onDecrease={handleDecrease}
+          size="sm"
           min={1}
           max={99}
         />
